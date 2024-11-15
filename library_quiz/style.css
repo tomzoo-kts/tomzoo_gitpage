@@ -1,14 +1,24 @@
+html {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+}
+
 /* 全体を中央寄せ */
 body {
     display: flex;
+    max-width: 800px;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     min-height: 100vh;
-    margin: 100px 100px;
+    margin: 5%; 
     font-family: Arial, sans-serif;
     background-color: #f9f9f9;
 }
+
+
 
 /* 見出しのスタイル */
 #title {
@@ -19,11 +29,19 @@ body {
     margin-bottom: 20px;
 }
 
+/* 水平線のスタイル */
+hr {
+    border-width: 0px 0px 0px 0px; /* 線の太さを指定 */
+    border-style: dashed; /* 線の種類を指定 */
+    border-color: cadetblue; /*線の色を指定 */
+    height: 5px;
+}
+
 /*フォーム全体のスタイル */
 form {
     display: flex;
     flex-direction: row;
-    width: 50%; /* フォームの横幅を50%に統一 */
+    width: 90%;
     margin-top: 20px;
     margin-left: auto;  /* 左寄せを解除 */
     margin-right: auto; /* 右寄せを解除して中央に配置 */
@@ -33,7 +51,7 @@ form {
 
 /* テキスト入力欄 */
 input[type="text"] {
-    width: 100%; /* フォーム幅に合わせて広がる */
+    width: 70%; /* フォーム幅に合わせて広がる */
     padding: 15px;
     font-size: 18px;
     border: 2px solid #ccc;
@@ -43,7 +61,7 @@ input[type="text"] {
 
 /* ボタン */
 button {
-    width: 20%; /* ボタンもフォームに合わせて広がる */
+    width: 30%; /* ボタンもフォームに合わせて広がる */
     padding: 15px;
     font-size: 18px;
     background-color: #4CAF50;
@@ -74,7 +92,7 @@ button:hover {
 }
 
 #final-question img {
-    width: 50%;
+    width: 90%;
     height: auto;
     border: 1px solid #ccc;
     border-radius: 10px;

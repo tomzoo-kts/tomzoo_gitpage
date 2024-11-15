@@ -12,7 +12,7 @@
     <img id="title" src="title.png" alt="title">
 
     <div id="initial-question">
-        <h2>謎を解くことで得られるキーワードをカタカナで入力せよ</h2>
+        <p>キーワードをカタカナで入力せよ</p>
         <form id="initial-answer-form" onsubmit="return checkInitialAnswer(event)">
             <input type="text" id="initial-answer" name="initial-answer" required>
             <button type="submit">確認</button>
@@ -26,7 +26,7 @@
     <div id="final-question" style="display: none;">
         <h1>最終問題</h1>
         <img src="final_question.png" alt="final_question">
-        <h2>最終問題の答えをカタカナで入力せよ</h2>
+        <p>最終問題の答えをカタカナで入力せよ</p>
         <form id="final-answer-form" onsubmit="return checkFinalAnswer(event)">
             <input type="text" id="final-answer" name="final-answer" required>
             <button type="submit">確認</button>
