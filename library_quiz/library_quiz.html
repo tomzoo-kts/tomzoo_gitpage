@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>図書館謎</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+    <img id="title" src="title.png" alt="title">
+
+    <div id="initial-question">
+        <h2>謎を解くことで得られるキーワードをカタカナで入力せよ</h2>
+        <form id="initial-answer-form" onsubmit="return checkInitialAnswer(event)">
+            <input type="text" id="initial-answer" name="initial-answer" required>
+            <button type="submit">確認</button>
+        </form>
+        <div id="incorrect-initial-result" class="incorrect-result" style="display: none;">残念！不正解です！</div>
+        <div id="initial-answer-result">
+            <h3>正解です！</h3>
+        </div>
+    </div>
+
+    <div id="final-question" style="display: none;">
+        <h1>最終問題</h1>
+        <img src="final_question.png" alt="final_question">
+        <h2>最終問題の答えをカタカナで入力せよ</h2>
+        <form id="final-answer-form" onsubmit="return checkFinalAnswer(event)">
+            <input type="text" id="final-answer" name="final-answer" required>
+            <button type="submit">確認</button>
+        </form>
+        <div id="incorrect-final-result" class="incorrect-result" style="display: none;">残念！不正解です！</div>
+        <div id="final-answer-result">
+            <h3>正解です！</h3>
+            <br>
+            <p>ここまで謎を解いてくれてありがとうございます。</p>
+            <p>制作者にぜひ感想をお寄せください。</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,105 @@
+/* 全体を中央寄せ */
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 100px 100px;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+}
+
+/* 見出しのスタイル */
+#title {
+    width: 90%;
+    height: auto;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+/*フォーム全体のスタイル */
+form {
+    display: flex;
+    flex-direction: row;
+    width: 50%; /* フォームの横幅を50%に統一 */
+    margin-top: 20px;
+    margin-left: auto;  /* 左寄せを解除 */
+    margin-right: auto; /* 右寄せを解除して中央に配置 */
+    gap: 10px; /* 入力欄とボタンの間隔 */
+    justify-content: center;
+}
+
+/* テキスト入力欄 */
+input[type="text"] {
+    width: 100%; /* フォーム幅に合わせて広がる */
+    padding: 15px;
+    font-size: 18px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+/* ボタン */
+button {
+    width: 20%; /* ボタンもフォームに合わせて広がる */
+    padding: 15px;
+    font-size: 18px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* ボタンホバー時のスタイル */
+button:hover {
+    background-color: #45a049;
+}
+
+#initial-question {
+    width: 90%;
+    text-align: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+#final-question {
+    display: none; /* 初期状態で非表示 */
+    width: 90%;
+    text-align: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+#final-question img {
+    width: 50%;
+    height: auto;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+/* 結果メッセージ */
+#initial-answer-result, #final-answer-result {
+    display: none; /* 初期状態で非表示 */
+    color: #333;
+    background-color: #f1f9ff;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+}
+
+/* 不正解メッセージのスタイル */
+.incorrect-result {
+    color: #ff4d4d;
+    background-color: #ffebeb;
+    border: 1px solid #ff4d4d;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(255, 77, 77, 0.1);
+    margin-top: 10px;
+}
