@@ -309,6 +309,18 @@
 
 <body>
   <h1>PrefectureGuessr</h1>
+
+  <div class="wrapper">
+    <div class="mode-toggle-container">
+      <span class="toggle-description">プレイモード</span>
+      <div class="toggle-box" id="display-toggle-box">
+        <div class="toggle-option" id="standard-option">標準</div>
+        <div class="toggle-option" id="simple-option">簡易</div>
+        <div class="toggle-slider" id="display-slider"></div>
+      </div>
+    </div>
+  </div>
+
   <div class="wrapper">
     <div class="mode-toggle-container">
       <span class="toggle-description">出題範囲</span>
@@ -381,6 +393,35 @@
       updateProgress();
       newQuiz();
     }
+
+
+    let currentDisplayMode = "standard";
+
+    const standardOption = document.getElementById("standard-option");
+    const simpleOption = document.getElementById("simple-option");
+    const displaySlider = document.getElementById("display-slider");
+
+    function updateDisplayMode(mode) {
+      currentDisplayMode = mode;
+      displaySlider.style.left = mode === "standard" ? "0%" : "50%";
+      renderCurrentMode();
+      newQuiz();  // 表示に影響する場合に備え再出題
+    }
+
+    function renderCurrentMode() {
+      const showStandard = currentDisplayMode === "standard";
+
+      document.getElementById("progress").parentElement.style.display = showStandard ? "block" : "none";
+      document.getElementById("hint").style.display = "block";  // ヒントは共通で表示
+      document.getElementById("note").style.display = showStandard ? "block" : "none";
+      document.getElementById("map-container").style.display = showStandard ? "block" : "none";
+      document.getElementById("knew").style.display = showStandard ? "inline-block" : "none";
+      document.getElementById("didnt-know").style.display = showStandard ? "inline-block" : "none";
+      document.getElementById("save").parentElement.style.display = showStandard ? "flex" : "none";
+    }
+
+    standardOption.onclick = () => updateDisplayMode("standard");
+    simpleOption.onclick = () => updateDisplayMode("simple");
 
     function newQuiz() {
       const candidates = currentMode === "all"
