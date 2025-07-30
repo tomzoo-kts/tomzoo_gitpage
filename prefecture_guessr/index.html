@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="ja">
 
 <head>
@@ -43,6 +44,40 @@
       opacity: 0.05;
       animation: stars 60s linear infinite;
       z-index: 0;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.6em;
+      }
+
+      #city {
+        font-size: 1.8em;
+      }
+
+      #kana {
+        font-size: 1em;
+      }
+
+      button {
+        width: 100%;
+        font-size: 1.2em;
+        padding: 14px 24px;
+
+        .button-group {
+          flex-direction: column;
+          gap: 14px;
+        }
+
+        .vertical-button-group {
+          width: 100%;
+        }
+
+        .file-label {
+          font-size: 1.2em;
+          padding: 14px 24px;
+        }
+      }
     }
 
     @keyframes stars {
@@ -311,7 +346,7 @@
   <h1>PrefectureGuessr</h1>
 
   <div class="wrapper">
-    <div class="mode-toggle-container">
+    <div class="mode-toggle-container" id="display-toggle">
       <span class="toggle-description">プレイモード</span>
       <div class="toggle-box" id="display-toggle-box">
         <div class="toggle-option" id="standard-option">標準</div>
@@ -322,7 +357,7 @@
   </div>
 
   <div class="wrapper">
-    <div class="mode-toggle-container">
+    <div class="mode-toggle-container" id="coverage-toggle">
       <span class="toggle-description">出題範囲</span>
       <div class="toggle-box">
         <div class="toggle-option" id="all-option">全て</div>
@@ -395,11 +430,13 @@
     }
 
 
+    // ----- 表示モード -----
     let currentDisplayMode = "standard";
 
     const standardOption = document.getElementById("standard-option");
     const simpleOption = document.getElementById("simple-option");
     const displaySlider = document.getElementById("display-slider");
+
 
     function updateDisplayMode(mode) {
       currentDisplayMode = mode;
@@ -411,18 +448,17 @@
     function renderCurrentMode() {
       const showStandard = currentDisplayMode === "standard";
 
-      document.getElementById("progress").parentElement.style.display = showStandard ? "block" : "none";
-      document.getElementById("hint").style.display = "block";  // ヒントは共通で表示
-      document.getElementById("note").style.display = showStandard ? "block" : "none";
+      document.getElementById("coverage-toggle").style.display = showStandard ? "flex" : "none";
       document.getElementById("map-container").style.display = showStandard ? "block" : "none";
-      document.getElementById("knew").style.display = showStandard ? "inline-block" : "none";
-      document.getElementById("didnt-know").style.display = showStandard ? "inline-block" : "none";
-      document.getElementById("save").parentElement.style.display = showStandard ? "flex" : "none";
+
+      const infoBox = document.getElementById("info-box");
+      infoBox.style.minHeight = showStandard ? "480px" : "150px";
     }
 
     standardOption.onclick = () => updateDisplayMode("standard");
     simpleOption.onclick = () => updateDisplayMode("simple");
 
+    // ----- クイズ -----
     function newQuiz() {
       const candidates = currentMode === "all"
         ? data
@@ -472,7 +508,6 @@
         document.getElementById("hint").textContent = current.hint || "";
         document.getElementById("note").textContent = current.note || "";
         const mapFrame = document.getElementById("map-frame");
-        mapFrame.src = `https://www.google.com/maps?q=${encodeURIComponent(current.pref + current.city)}&output=embed`;
         document.getElementById("map-container").style.visibility = "visible";
         showAnswerButtons();
       }
@@ -514,7 +549,7 @@
       }
     });
 
-
+    // ----- 進捗管理 -----
     function updateProgress() {
       document.getElementById("progress").textContent =
         `知っている市数: ${knownSet.size} / ${data.length}`;
