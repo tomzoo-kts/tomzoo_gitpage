@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>府中市の位置を表示</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <style>
+        #map {
+            width: 100%;
+            height: 500px;
+            margin-top: 20px;
+        }
+
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>広島県府中市の位置</h2>
+    <p>以下は広島県府中市がどこにあるかを示した地図です。地図の種類を切り替えることもできます。</p>
+
+    <div id="map"></div>
+
+    <iframe src="https://www.google.com/maps?q=北海道留萌市&output=embed" width="600" height="450" style="border:0;"
+        allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+    </iframe>
+
+
+
+    <script>
+        const cityName = '広島県府中市'; // 任意の市名に変更可
+
+        // ベース地図レイヤー定義
+        const baseMaps = {
+            "標準地図": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }),
+            "地形図": L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+                attribution: 'Map data: &copy; OpenStreetMap contributors, SRTM | Map style: &copy; OpenTopoMap'
+            }),
+            "白地図": L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap & CartoDB'
+            }),
+            "航空写真": L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri'
+            })
+        };
+
+        // 地図初期化（仮座標）
+        const map = L.map('map', {
+            center: [34.5, 133.2], // 広島県のあたり
+            zoom: 10,
+            layers: [baseMaps["標準地図"]]
+        });
+
+        // レイヤー切り替えコントロール
+        L.control.layers(baseMaps).addTo(map);
+
+        // Nominatimで市の位置を取得してマーカー表示
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cityName)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length > 0) {
+                    const lat = parseFloat(data[0].lat);
+                    const lon = parseFloat(data[0].lon);
+                    map.setView([lat, lon], 12); // 中心にズーム
+                    L.marker([lat, lon]).addTo(map)
+                        .bindPopup(`${cityName} の中心`).openPopup();
+                } else {
+                    alert("市の位置が見つかりませんでした。");
+                }
+            });
+    </script>
+
+</body>
+
+</html>
