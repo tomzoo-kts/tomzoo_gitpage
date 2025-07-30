@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>PrefectureGuessr</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+      overflow: auto;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 100%;
+      background: radial-gradient(white 1px, transparent 1px),
+        radial-gradient(white 1px, transparent 1px);
+      background-size: 50px 50px;
+      background-position: 0 0, 25px 25px;
+      opacity: 0.05;
+      animation: stars 60s linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes stars {
+      0% {
+        transform: translate(0, 0);
+      }
+
+      100% {
+        transform: translate(-50px, -50px);
+      }
+    }
+
+    h1 {
+      font-size: 2.2em;
+      margin: 20px 0 10px;
+      z-index: 1;
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      margin-bottom: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+    }
+
+    #kana {
+      font-size: 1.1em;
+      color: #ccc;
+      margin-bottom: 0.3em;
+    }
+
+    #city {
+      font-size: 2.2em;
+      font-weight: bold;
+      margin-bottom: 0.8em;
+    }
+
+    #answer {
+      font-size: 1.3em;
+      min-height: 1.8em;
+      margin-bottom: 1.2em;
+      color: #ffd;
+    }
+
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 4em;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1em;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      background: #fff;
+      color: #222;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+    }
+
+
+    .mode-toggle-container {
+      display: flex;
+      align-items: center;
+      gap: 1em;
+      justify-content: center;
+      margin-bottom: 1em;
+    }
+
+    .toggle-box {
+      position: relative;
+      display: flex;
+      width: 400px;
+      height: 40px;
+      background-color: #444;
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      user-select: none;
+      font-size: 0.95em;
+    }
+
+    .toggle-option {
+      flex: 1;
+      text-align: center;
+      line-height: 40px;
+      z-index: 2;
+      color: #fff;
+      font-weight: bold;
+      position: relative;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 50%;
+      height: 100%;
+      background-color: #4caf50;
+      border-radius: 8px;
+      transition: left 0.3s ease;
+      z-index: 1;
+    }
+
+    .toggle-description {
+      font-size: 1.2em;
+      color: #ddd;
+    }
+
+    #progress {
+      font-size: 1.5em;
+      margin-bottom: 1em;
+    }
+
+    .vertical-button-group {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .file-label {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #fff;
+      color: #222;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1em;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-align: center;
+    }
+
+    .file-label:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    button.danger {
+      background: #d9534f;
+      color: #fff;
+    }
+
+    button.danger:hover {
+      background: #c9302c;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.6em;
+      }
+
+      #city {
+        font-size: 1.8em;
+      }
+
+      #kana {
+        font-size: 1em;
+      }
+
+      button {
+        width: 100%;
+        font-size: 1em;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      .vertical-button-group {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1>県あてゲーム</h1>
+
+  <div class="wrapper">
+    <div id="kana"></div>
+    <div id="city">読み込み中...</div>
+    <div id="answer"></div>
+
+    <div class="button-group">
+      <button id="show-answer">答えを見る</button>
+      <button id="knew" style="display:none;">知ってた</button>
+      <button id="didnt-know" style="display:none;">知らなかった</button>
+    </div>
+
+    <div class="mode-toggle-container">
+      <span class="toggle-description">出題範囲</span>
+      <div class="toggle-box">
+        <div class="toggle-option" id="all-option">全て</div>
+        <div class="toggle-option" id="unknown-option">未習得のみ</div>
+        <div class="toggle-slider" id="toggle-slider"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrapper">
+    <div id="progress">進捗: 0 / 0</div>
+    <div class="vertical-button-group">
+      <button id="save">進捗を保存</button>
+      <label for="load" class="file-label">進捗を読み込み</label>
+      <input type="file" id="load">
+      <button id="reset" class="danger">進捗をリセット</button>
+    </div>
+  </div>
+
+  <script>
+    let data = [];
+    let knownSet = new Set();
+    let unknownSet = new Set();
+    let current = null;
+    let currentMode = "all";
+
+    async function loadCSV() {
+      const res = await fetch("city_list.csv");
+      const text = await res.text();
+      const lines = text.trim().split("\n").slice(1);
+      data = lines.map(line => {
+        const [code, pref, city, kana] = line.split(",");
+        return { code, pref, city, kana };
+      });
+      data.forEach(d => unknownSet.add(d.code));
+      updateProgress();
+      newQuiz();
+    }
+
+    function newQuiz() {
+      const candidates = currentMode === "all"
+        ? data
+        : data.filter(d => unknownSet.has(d.code));
+
+      if (candidates.length === 0) {
+        document.getElementById("city").textContent = "出題可能な問題がありません";
+        document.getElementById("kana").textContent = "";
+        document.getElementById("answer").textContent = "";
+        current = null;
+        return;
+      }
+
+      current = candidates[Math.floor(Math.random() * candidates.length)];
+
+      document.getElementById("kana").textContent = current.kana;
+      document.getElementById("city").textContent = current.city;
+      document.getElementById("answer").textContent = "";
+      showAnswerButtonOnly();
+    }
+
+    // ボタン切替制御
+    function showAnswerButtonOnly() {
+      document.getElementById("show-answer").style.display = "inline-block";
+      document.getElementById("knew").style.display = "none";
+      document.getElementById("didnt-know").style.display = "none";
+    }
+
+    function showAnswerButtons() {
+      document.getElementById("show-answer").style.display = "none";
+      document.getElementById("knew").style.display = "inline-block";
+      document.getElementById("didnt-know").style.display = "inline-block";
+    }
+
+    // ボタン動作
+    document.getElementById("show-answer").onclick = () => {
+      if (current) {
+        document.getElementById("answer").textContent = "正解：" + current.pref;
+        showAnswerButtons();
+      }
+    };
+
+    document.getElementById("knew").onclick = () => {
+      if (!current) return;
+      unknownSet.delete(current.code);
+      knownSet.add(current.code);
+      updateProgress();
+      newQuiz();
+    };
+
+    document.getElementById("didnt-know").onclick = () => {
+      if (!current) return;
+      knownSet.delete(current.code);
+      unknownSet.add(current.code);
+      updateProgress();
+      newQuiz();
+    };
+
+    function updateProgress() {
+      document.getElementById("progress").textContent =
+        `知っている市数: ${knownSet.size} / ${data.length}`;
+    }
+
+    document.getElementById("save").onclick = () => {
+      const obj = {
+        known: Array.from(knownSet),
+        unknown: Array.from(unknownSet)
+      };
+      const blob = new Blob([JSON.stringify(obj)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "progress.json";
+      a.click();
+    };
+
+    document.getElementById("load").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const json = JSON.parse(event.target.result);
+          knownSet = new Set(json.known || []);
+          unknownSet = new Set(json.unknown || []);
+          updateProgress();
+          newQuiz();
+        } catch (err) {
+          alert("読み込みに失敗しました。");
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    document.getElementById("reset").onclick = () => {
+      if (!confirm("進捗をすべてリセットします。よろしいですか？")) return;
+      knownSet.clear();
+      unknownSet = new Set(data.map(d => d.code));
+      updateProgress();
+      newQuiz();
+    };
+
+    // トグルスイッチ処理
+    const allOption = document.getElementById("all-option");
+    const unknownOption = document.getElementById("unknown-option");
+    const slider = document.getElementById("toggle-slider");
+
+    function updateToggle(mode) {
+      currentMode = mode;
+      slider.style.left = mode === "all" ? "0%" : "50%";
+      newQuiz();
+    }
+
+    allOption.onclick = () => updateToggle("all");
+    unknownOption.onclick = () => updateToggle("unknown");
+
+    loadCSV();
+  </script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TomNazo "Lib24"</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #title {
+            width: 90%;
+            max-width: 600px;
+            height: auto;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            margin: 40px 0 20px;
+            background-color: #fff;
+        }
+
+        .quiz-img {
+            width: 100%;
+            max-width: 640px;
+            /* ← 以前より少し大きめに */
+            height: auto;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            background-color: #fff;
+        }
+
+        .section-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px 20px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        input[type="text"] {
+            flex: 1 1 60%;
+            padding: 15px;
+            font-size: 18px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        button {
+            flex: 1 1 30%;
+            padding: 15px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .incorrect-result {
+            color: #ff4d4d;
+            background-color: #ffebeb;
+            border: 1px solid #ff4d4d;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(255, 77, 77, 0.2);
+            margin-top: 10px;
+        }
+
+        .correct-result {
+            color: #333;
+            background-color: #f1f9ff;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 10px;
+        }
+
+        #final-question img {
+            width: 90%;
+            max-width: 500px;
+            height: auto;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 500px) {
+
+            input[type="text"],
+            button {
+                font-size: 16px;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="initial-question" class="section-box">
+        <!-- クイズ画像を追加 -->
+        <img src="quiz_1.png" alt="クイズ1" class="quiz-img">
+        <img src="quiz_2.png" alt="クイズ2" class="quiz-img">
+
+        <p>キーワードをカタカナで入力せよ</p>
+        <form id="initial-answer-form" onsubmit="return checkInitialAnswer(event)">
+            <input type="text" id="initial-answer" name="initial-answer" required>
+            <button type="submit">確認</button>
+        </form>
+        <div id="incorrect-initial-result" class="incorrect-result" style="display: none;">残念！不正解です！</div>
+        <div id="initial-answer-result" class="correct-result" style="display: none;">
+            <h3>正解です！</h3>
+        </div>
+    </div>
+
+    <div id="final-question" class="section-box" style="display: none;">
+        <h2>最終問題</h2>
+        <img src="quiz_last.png" alt="final_question">
+        <p>最終問題の答えをカタカナで入力せよ</p>
+        <form id="final-answer-form" onsubmit="return checkFinalAnswer(event)">
+            <input type="text" id="final-answer" name="final-answer" required>
+            <button type="submit">確認</button>
+        </form>
+        <div id="incorrect-final-result" class="incorrect-result" style="display: none;">残念！不正解です！</div>
+        <div id="final-answer-result" class="correct-result" style="display: none;">
+            <h3>正解です！</h3>
+            <p>ここまで謎を解いてくれてありがとうございます。</p>
+            <p>制作者にぜひ感想をお寄せください。</p>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function () {
+            document.getElementById("final-question").style.display = "none";
+        };
+        const correctInitialAnswer = "アカイロ";
+        const correctFinalAnswer = "ブンコボン";
+
+        function checkInitialAnswer(event) {
+            event.preventDefault();
+            const userAnswer = document.getElementById("initial-answer").value.trim();
+            if (userAnswer === correctInitialAnswer) {
+                document.getElementById("initial-answer-form").style.display = "none";
+                document.getElementById("initial-answer-result").style.display = "block";
+                document.getElementById("final-question").style.display = "block";
+                document.getElementById("incorrect-initial-result").style.display = "none";
+            } else {
+                document.getElementById("incorrect-initial-result").style.display = "block";
+            }
+        }
+
+        function checkFinalAnswer(event) {
+            event.preventDefault();
+            const userAnswer = document.getElementById("final-answer").value.trim();
+            if (userAnswer === correctFinalAnswer) {
+                document.getElementById("final-answer-form").style.display = "none";
+                document.getElementById("final-answer-result").style.display = "block";
+                document.getElementById("incorrect-final-result").style.display = "none";
+            } else {
+                document.getElementById("incorrect-final-result").style.display = "block";
+            }
+        }
+    </script>
+</body>
+
+</html>
