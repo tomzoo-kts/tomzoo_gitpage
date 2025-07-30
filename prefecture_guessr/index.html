@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8" />
   <title>PrefectureGuessr</title>
@@ -36,8 +37,13 @@
     }
 
     @keyframes stars {
-      0% { transform: translate(0, 0); }
-      100% { transform: translate(-50px, -50px); }
+      0% {
+        transform: translate(0, 0);
+      }
+
+      100% {
+        transform: translate(-50px, -50px);
+      }
     }
 
     h1 {
@@ -76,6 +82,7 @@
       margin-bottom: 2.5em;
       padding: 1.2em;
       border-radius: 12px;
+      min-height: 480px;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.2);
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
@@ -245,15 +252,34 @@
     }
 
     @media (max-width: 600px) {
-      h1 { font-size: 1.6em; }
-      #city { font-size: 1.8em; }
-      #kana { font-size: 1em; }
-      button { width: 100%; font-size: 1em; }
-      .button-group { flex-direction: column; }
-      .vertical-button-group { width: 100%; }
+      h1 {
+        font-size: 1.6em;
+      }
+
+      #city {
+        font-size: 1.8em;
+      }
+
+      #kana {
+        font-size: 1em;
+      }
+
+      button {
+        width: 100%;
+        font-size: 1em;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      .vertical-button-group {
+        width: 100%;
+      }
     }
   </style>
 </head>
+
 <body>
   <h1>PrefectureGuessr</h1>
   <div class="wrapper">
@@ -274,8 +300,7 @@
       <div id="hint"></div>
       <div id="note"></div>
       <div id="map-container">
-        <iframe id="map-frame" allowfullscreen loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <iframe id="map-frame" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
       </div>
     </div>
 
@@ -339,7 +364,11 @@
       document.getElementById("answer").textContent = "";
       document.getElementById("hint").textContent = "";
       document.getElementById("note").textContent = "";
+      
+      const mapFrame = document.getElementById("map-frame");
+      mapFrame.src = `https://www.google.com/maps?q=${encodeURIComponent(current.pref + current.city)}&output=embed`;
       document.getElementById("map-container").style.visibility = "hidden";
+
 
       showAnswerButtonOnly();
     }
@@ -383,6 +412,27 @@
       updateProgress();
       newQuiz();
     };
+
+    document.addEventListener("keydown", (event) => {
+      if (!current) return;
+
+      const showAnswerVisible = document.getElementById("show-answer").style.display !== "none";
+
+      if (event.key === "g") {
+        if (showAnswerVisible) {
+          document.getElementById("show-answer").click();
+        } else {
+          document.getElementById("knew").click();
+        }
+      } else if (event.key === "h") {
+        if (showAnswerVisible) {
+          document.getElementById("show-answer").click();
+        } else {
+          document.getElementById("didnt-know").click();
+        }
+      }
+    });
+
 
     function updateProgress() {
       document.getElementById("progress").textContent =
@@ -443,4 +493,5 @@
     loadCSV();
   </script>
 </body>
+
 </html>
