@@ -78,43 +78,44 @@
     }
 
 
-    #info-box {
-      margin-top: 1em;
-      padding: 1.2em;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-      display: flex;
-      flex-direction: column;
-      gap: 1em;
-      z-index: 1;
-    }
+#info-box {
+  margin-top: 1em;
+  margin-bottom: 2.5em; /* ボタンとの間隔を確保 */
+  padding: 1.2em;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  z-index: 1;
+}
 
-    #answer {
-      font-size: 1.5em;
-      min-height: 1.8em;
-      margin-bottom: 1.2em;
-      color: rgb(212, 104, 3);
-    }
+#answer {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #ffc107;
+}
 
-    #hint {
-      font-size: 1.2em;
-      color: #eee;
-    }
+#hint {
+  font-size: 1.2em;
+  color: #eee;
+}
 
-    #note {
-      font-size: 1.1em;
-      color: #ccc;
-    }
+#note {
+  font-size: 1.1em;
+  color: #ccc;
+}
 
-    #map-container {
-      width: 100%;
-      height: 300px;
-      overflow: hidden;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
+#map-container {
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: none; /* 初期は非表示 */
+}
 
     .button-group {
       display: flex;
@@ -375,12 +376,20 @@
     }
 
     // ボタン動作
-    document.getElementById("show-answer").onclick = () => {
-      if (current) {
-        document.getElementById("answer").textContent = current.pref;
-        showAnswerButtons();
-      }
-    };
+document.getElementById("show-answer").onclick = () => {
+  if (current) {
+    document.getElementById("answer").textContent = "正解：" + current.pref;
+    document.getElementById("hint").textContent = current.hint || "";
+    document.getElementById("note").textContent = current.note || "";
+
+    const mapFrame = document.getElementById("map-frame");
+    mapFrame.src = `https://www.google.com/maps?q=${encodeURIComponent(current.pref + current.city)}&output=embed`;
+
+    document.getElementById("map-container").style.display = "block"; // ← ここを追加
+
+    showAnswerButtons();
+  }
+};
 
     document.getElementById("knew").onclick = () => {
       if (!current) return;
