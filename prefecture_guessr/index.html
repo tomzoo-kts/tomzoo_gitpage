@@ -66,56 +66,68 @@
     }
 
     #kana {
-      font-size: 1.1em;
+      font-size: 1.4em;
       color: #ccc;
-      margin-bottom: 0.3em;
+      margin-bottom: 0.4em;
     }
+
+
 
     #city {
-      font-size: 2.2em;
+      font-size: 2.6em;
       font-weight: bold;
-      margin-bottom: 0.8em;
+      margin-bottom: 0.6em;
     }
 
 
-#info-box {
-  margin-top: 1em;
-  margin-bottom: 2.5em; /* ボタンとの間隔を確保 */
-  padding: 1.2em;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-  display: flex;
-  flex-direction: column;
-  gap: 1em;
-  z-index: 1;
-}
+    #info-box {
+      margin-top: 1em;
+      margin-bottom: 2.5em;
+      /* ボタンとの間隔を確保 */
+      padding: 1.2em;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+      z-index: 1;
+    }
 
-#answer {
-  font-size: 1.5em;
-  font-weight: bold;
-  color: #ffc107;
-}
 
-#hint {
-  font-size: 1.2em;
-  color: #eee;
-}
+    #answer {
+      font-size: 1.8em;
+      font-weight: bold;
+      color: #ffc107;
+    }
 
-#note {
-  font-size: 1.1em;
-  color: #ccc;
-}
+    #hint {
+      font-size: 1.2em;
+      color: #eee;
+    }
 
-#map-container {
-  width: 100%;
-  height: 300px;
-  overflow: hidden;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  display: none; /* 初期は非表示 */
-}
+    #note {
+      font-size: 1.1em;
+      color: #ccc;
+    }
+
+    #map-container {
+      width: 100%;
+      min-height: 300px;
+      height: 300px;
+      overflow: hidden;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      visibility: hidden;
+      /* 非表示にするが、スペースは維持 */
+    }
+
+    #map-container iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
 
     .button-group {
       display: flex;
@@ -376,20 +388,19 @@
     }
 
     // ボタン動作
-document.getElementById("show-answer").onclick = () => {
-  if (current) {
-    document.getElementById("answer").textContent = "正解：" + current.pref;
-    document.getElementById("hint").textContent = current.hint || "";
-    document.getElementById("note").textContent = current.note || "";
+    document.getElementById("show-answer").onclick = () => {
+      if (current) {
+        document.getElementById("answer").textContent = "正解：" + current.pref;
+        document.getElementById("hint").textContent = current.hint || "";
+        document.getElementById("note").textContent = current.note || "";
 
-    const mapFrame = document.getElementById("map-frame");
-    mapFrame.src = `https://www.google.com/maps?q=${encodeURIComponent(current.pref + current.city)}&output=embed`;
+        const mapFrame = document.getElementById("map-frame");
+        mapFrame.src = `https://www.google.com/maps?q=${encodeURIComponent(current.pref + current.city)}&output=embed`;
 
-    document.getElementById("map-container").style.display = "block"; // ← ここを追加
-
-    showAnswerButtons();
-  }
-};
+        document.getElementById("map-container").style.visibility = "visible"; // ← visibilityを表示に
+        showAnswerButtons();
+      }
+    };
 
     document.getElementById("knew").onclick = () => {
       if (!current) return;
