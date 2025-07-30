@@ -65,6 +65,18 @@
       box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
     }
 
+    .wrapper h2 {
+      font-size: 1.4em;
+      margin-bottom: 0.5em;
+      color: #ffdd88;
+    }
+
+    .wrapper p {
+      font-size: 1em;
+      line-height: 1.6;
+      color: #eee;
+    }
+
     #kana {
       font-size: 1.4em;
       color: #ccc;
@@ -300,7 +312,9 @@
       <div id="hint"></div>
       <div id="note"></div>
       <div id="map-container">
-        <iframe id="map-frame" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <iframe id="map-frame" src="about:blank" width="100%" height="300" style="border:0;" allowfullscreen
+          loading="eager" referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
       </div>
     </div>
 
@@ -319,6 +333,18 @@
       <input type="file" id="load">
       <button id="reset" class="danger">進捗をリセット</button>
     </div>
+  </div>
+
+  <div class="wrapper">
+    <h2>このアプリについて</h2>
+    <p>
+      この「PrefectureGuessr」は、日本全国の市の名前から都道府県を当てる学習ツールです。<br>
+      「知ってた」「知らなかった」の記録を通じて、自分の地理知識を段階的に確認・習得できます。<br>
+      進捗は保存でき、読み込みを行うことで再開が可能です。<br>
+      <br>
+      <strong>キーボードショートカット</strong><br>
+      Gキー：知ってた/答え表示 | Hキー：知らなかった/答え表示
+    </p>
   </div>
 
   <script>
@@ -364,11 +390,10 @@
       document.getElementById("answer").textContent = "";
       document.getElementById("hint").textContent = "";
       document.getElementById("note").textContent = "";
-      
+
       const mapFrame = document.getElementById("map-frame");
       mapFrame.src = `https://www.google.com/maps?q=${encodeURIComponent(current.pref + current.city)}&output=embed`;
       document.getElementById("map-container").style.visibility = "hidden";
-
 
       showAnswerButtonOnly();
     }
