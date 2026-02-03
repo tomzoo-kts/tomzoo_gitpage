@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TomNazo "Lib24"</title>
+    <title>LibNazo 2024</title>
     <style>
         * {
             box-sizing: border-box;
@@ -36,7 +36,6 @@
         .quiz-img {
             width: 100%;
             max-width: 640px;
-            /* ← 以前より少し大きめに */
             height: auto;
             border: 1px solid #ccc;
             border-radius: 10px;
@@ -133,10 +132,16 @@
 </head>
 
 <body>
+    <div id="initial-question" class="section-box">
+        <img src="title.png" alt="タイトル画像" class="quiz-img">
+        <p>あなたは図書館で謎解きの用紙を見つけた。</p>
+        <p>「豪華賞品...!これは解かねば！」</p>
+    </div>
 
     <div id="initial-question" class="section-box">
         <!-- クイズ画像を追加 -->
         <img src="quiz_1.png" alt="クイズ1" class="quiz-img">
+        <!-- 2つ目のクイズ画像を追加 -->
         <img src="quiz_2.png" alt="クイズ2" class="quiz-img">
 
         <p>キーワードをカタカナで入力せよ</p>
@@ -147,6 +152,7 @@
         <div id="incorrect-initial-result" class="incorrect-result" style="display: none;">残念！不正解です！</div>
         <div id="initial-answer-result" class="correct-result" style="display: none;">
             <h3>正解です！</h3>
+            <p>職員に答えを告げると、追加で用紙を手渡された。</p>
         </div>
     </div>
 
@@ -161,6 +167,13 @@
         <div id="incorrect-final-result" class="incorrect-result" style="display: none;">残念！不正解です！</div>
         <div id="final-answer-result" class="correct-result" style="display: none;">
             <h3>正解です！</h3>
+            <p>「おめでとうございます！見事謎を解き明かしましたね！<br>お疲れさまでした！」</p>
+            <p>...豪華賞品は？</p>
+            <p>「ここに置いてある本を<br>いつでも借りることができる権利を贈呈します！」
+            <p>...それは確かに豪華賞品だ。<br>けどもともと本は無料で借りられるじゃないか！</p>
+            <br>
+            <hr>
+            <br>
             <p>ここまで謎を解いてくれてありがとうございます。</p>
             <p>制作者にぜひ感想をお寄せください。</p>
         </div>
