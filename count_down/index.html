@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>カウントダウン</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg1: #000033;
+      --bg2: #440000;
+      --danger: rgb(220, 45, 0);
+      --card: rgba(0, 0, 0, 0.5);
+    }
+
+    body {
+      font-family: 'Noto Serif JP', serif;
+      text-align: center;
+      margin: 0;
+      padding: clamp(12px, 3vw, 24px);
+      background: linear-gradient(to bottom, var(--bg1), var(--bg2));
+      background-size: cover;
+      color: white;
+      transition: background 1s, color 1s;
+      overflow: hidden;
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: clamp(10px, 2.5vh, 18px);
+    }
+
+    h1.emergency {
+      margin: 0;
+      font-size: clamp(18px, 4.8vw, 44px);
+      font-weight: 700;
+      padding: 0 8px;
+      line-height: 1.2;
+      word-break: break-word;
+    }
+
+    #countdown {
+      font-weight: 700;
+      line-height: 1.1;
+      display: inline-flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: clamp(8px, 2vw, 16px);
+      padding: clamp(10px, 2.5vw, 18px) clamp(12px, 3vw, 24px);
+      background: var(--card);
+      border-radius: 12px;
+      width: min(980px, 95vw);
+      margin: 0 auto;
+      z-index: 10;
+    }
+
+    .countdown-item {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 0.35em;
+      padding: 0.05em 0.2em;
+      border-radius: 10px;
+      white-space: nowrap;
+    }
+
+    .countdown-item b {
+      font-size: clamp(36px, 9vw, 110px);
+      letter-spacing: 0.02em;
+    }
+
+    .countdown-item span {
+      font-size: clamp(14px, 3.8vw, 28px);
+      opacity: 0.9;
+    }
+
+    .message {
+      font-size: clamp(18px, 5vw, 46px);
+      font-weight: 700;
+      padding: 0.3em 0.5em;
+    }
+
+    /* 警告モード */
+    .alert {
+      background: black !important;
+      color: var(--danger);
+    }
+
+    .alert::before,
+    .alert::after {
+      content: "";
+      position: absolute;
+      width: 12%;
+      height: 1000%;
+      background: repeating-linear-gradient(
+        45deg,
+        var(--danger),
+        var(--danger) 20px,
+        black 20px,
+        black 40px
+      );
+      opacity: 0.7;
+      z-index: 1;
+      animation: slide 10s linear infinite, blink 2s ease-in infinite alternate;
+      pointer-events: none;
+    }
+
+    .alert::before {
+      left: 0;
+    }
+
+    .alert::after {
+      right: 0;
+    }
+
+    @keyframes slide {
+      from { top: 0%; }
+      to   { top: -200%; }
+    }
+
+    @keyframes blink {
+      0%   { opacity: 0.2; }
+      50%  { opacity: 0.8; }
+      100% { opacity: 0.2; }
+    }
+
+    .toggle-alert {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      padding: 12px 16px;
+      background-color: #ff0000;
+      color: #ffffff;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      border-radius: 10px;
+      z-index: 30;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+      touch-action: manipulation;
+    }
+
+    .toggle-alert:active {
+      transform: translateY(1px);
+    }
+
+    .meta {
+      font-size: clamp(12px, 3.2vw, 16px);
+      opacity: 0.85;
+    }
+
+    @media (max-width: 360px) {
+      .toggle-alert {
+        left: 10px;
+        right: 10px;
+        width: calc(100% - 20px);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1 class="emergency" id="page-title">2025年度修論提出期限まで</h1>
+  <div id="countdown" aria-live="polite"></div>
+  <div class="meta" id="deadline-info"></div>
+  <button class="toggle-alert" id="toggle-alert" type="button">警告モード切替</button>
+
+  <script>
+    // ===== 設定（デフォルト） =====
+    const DEFAULT_TITLE = "2025年度修論提出期限まで";
+    const DEFAULT_DEADLINE_ISO = "2026-02-09T15:00:00+09:00";
+    const FORCE_ALERT_WITHIN_MS = 24 * 60 * 60 * 1000; // 24時間
+
+    // localStorageキー（締切ごとに分ける）
+    function makeStorageKey(deadlineISO, title) {
+      return "countdown_alert_mode::" + encodeURIComponent(deadlineISO) + "::" + encodeURIComponent(title);
+    }
+
+    // URLパラメータ取得
+    function getParams() {
+      const p = new URLSearchParams(location.search);
+      return {
+        title: p.get("title"),
+        deadline: p.get("deadline"),
+        alert: p.get("alert"),
+      };
+    }
+
+    // deadline の解釈：
+    // - ISO文字列（2026-02-10T15:00:00+09:00）→ そのまま new Date()
+    // - "YYYY-MM-DD HH:mm" → "YYYY-MM-DDTHH:mm:00+09:00" に補完（JST想定）
+    // - "YYYY-MM-DD" → その日の 23:59:59 JST に補完
+    function parseDeadline(input) {
+      if (!input) return { date: new Date(DEFAULT_DEADLINE_ISO), iso: DEFAULT_DEADLINE_ISO };
+
+      const raw = input.trim();
+
+      // ISOっぽい（Tを含む、または末尾にZや+09:00などがある）なら Date に任せる
+      const looksISO = raw.includes("T") || /Z$/.test(raw) || /[+\-]\d{2}:\d{2}$/.test(raw);
+      if (looksISO) {
+        const d = new Date(raw);
+        if (!isNaN(d.getTime())) return { date: d, iso: raw };
+      }
+
+      // "YYYY-MM-DD HH:mm"
+      const m1 = raw.match(/^(\d{4}-\d{2}-\d{2})[ T](\d{2}):(\d{2})$/);
+      if (m1) {
+        const iso = `${m1[1]}T${m1[2]}:${m1[3]}:00+09:00`;
+        const d = new Date(iso);
+        if (!isNaN(d.getTime())) return { date: d, iso };
+      }
+
+      // "YYYY-MM-DD"
+      const m2 = raw.match(/^(\d{4}-\d{2}-\d{2})$/);
+      if (m2) {
+        const iso = `${m2[1]}T23:59:59+09:00`;
+        const d = new Date(iso);
+        if (!isNaN(d.getTime())) return { date: d, iso };
+      }
+
+      // パース失敗 → デフォルト
+      return { date: new Date(DEFAULT_DEADLINE_ISO), iso: DEFAULT_DEADLINE_ISO };
+    }
+
+    function formatDeadlineForDisplay(dateObj) {
+      // 日本の表示（環境依存だが日本語が多い）
+      try {
+        return dateObj.toLocaleString("ja-JP", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+      } catch {
+        return String(dateObj);
+      }
+    }
+
+    function pad2(n) {
+      return String(n).padStart(2, "0");
+    }
+
+    // ===== 初期化 =====
+    const params = getParams();
+    const title = params.title ? decodeURIComponent(params.title) : DEFAULT_TITLE;
+
+    const parsed = parseDeadline(params.deadline);
+    const targetDate = parsed.date;
+    const deadlineISO = parsed.iso;
+
+    document.getElementById("page-title").textContent = title;
+    document.getElementById("deadline-info").textContent = "締切: " + formatDeadlineForDisplay(targetDate);
+
+    const storageKey = makeStorageKey(deadlineISO, title);
+
+    const toggleBtn = document.getElementById("toggle-alert");
+    toggleBtn.addEventListener("click", () => {
+      // 強制警告中は切替不可（要件3：警告モード維持）
+      if (isForceAlert()) return;
+
+      const nowAlert = document.body.classList.toggle("alert");
+      localStorage.setItem(storageKey, nowAlert ? "1" : "0");
+    });
+
+    // URLで alert=1 なら初期警告ON（ただし強制警告が優先）
+    if (params.alert === "1") {
+      localStorage.setItem(storageKey, "1");
+    }
+
+    // 保存された状態を復元（強制警告が優先）
+    const saved = localStorage.getItem(storageKey);
+    if (saved === "1") document.body.classList.add("alert");
+
+    function isForceAlert() {
+      const now = new Date();
+      const diff = targetDate - now;
+      return diff <= FORCE_ALERT_WITHIN_MS; // 24h以内 or 過ぎたら true
+    }
+
+    function renderCountdown(diff) {
+      if (diff <= 0) {
+        document.getElementById("countdown").innerHTML =
+          `<div class="message">時間になりました！</div>`;
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      document.getElementById("countdown").innerHTML = `
+        <span class="countdown-item"><b>${pad2(days)}</b><span>日</span></span>
+        <span class="countdown-item"><b>${pad2(hours)}</b><span>時間</span></span>
+        <span class="countdown-item"><b>${pad2(minutes)}</b><span>分</span></span>
+        <span class="countdown-item"><b>${pad2(seconds)}</b><span>秒</span></span>
+      `;
+    }
+
+    function updateCountdown() {
+      const now = new Date();
+      const diff = targetDate - now;
+
+      renderCountdown(diff);
+
+      // 強制警告（24h以内 or 期限超過）
+      if (diff <= FORCE_ALERT_WITHIN_MS) {
+        document.body.classList.add("alert");
+        // 強制警告中はボタンを消す（元仕様踏襲）
+        if (toggleBtn) toggleBtn.remove();
+        return;
+      }
+
+      // 強制警告でないときだけ「保存した状態」を反映
+      const savedMode = localStorage.getItem(storageKey);
+      if (savedMode === "1") document.body.classList.add("alert");
+      else document.body.classList.remove("alert");
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+  </script>
+</body>
+
+</html>
